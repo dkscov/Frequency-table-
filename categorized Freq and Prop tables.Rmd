@@ -1,0 +1,114 @@
+---
+title: "Frequency and Proportion function"
+author: "DKS"
+date: "10/22/2017"
+output: html_document
+---
+
+Generate a test data frame
+```{r}
+
+
+var.1<-abs(round(rnorm(200)))
+var.2<-abs(round(rnorm(200)))
+var.3<-abs(round(rnorm(200)))
+var.4<-abs(round(rnorm(200)))
+category<-rep(c("A","B","C","D"),50)
+
+test.data<-data.frame(category, var.1,var.2,var.3, var.4)
+
+```
+
+
+
+```{r}
+
+
+
+# table function
+
+## In this function: X is the data frame column that the frequency table will be broken down by
+# data is the dataframe
+
+freq.prop.tables.Function = function(X, data)
+{
+  arguments <- as.list(match.call())
+  y = eval(arguments$y, data)
+ output.tables.freq<<-vector(mode="list",length=ncol(data))
+ names(output.tables.freq)<<-paste("freq",colnames(data),sep="_")
+output.tables.prop<<-vector(mode="list",length=ncol(data))
+names(output.tables.prop)<<-paste("prop",colnames(data),sep="_")
+  for (i in 2:ncol(data)) {
+    # j indexes which row category of the data we are looking at 
+    y<-NULL
+    y.2<-NULL
+    for (j in 1:length(unique(X))) {
+      
+      z<-NULL
+      z.2<-NULL
+      # indexes which category of values we are looking at in row category j in column i of the data -- ex.Want the number of times var.1=0,1,2, or 3 when category= A, etc.
+      for (k in 1:length(unique(data[,i]))) {
+        # make a vector of the 5 # frequencies for the current j, resetting with each new j
+        z<-c(z,sum(data[which(X==unique(X)[j]),i]==unique(sort(data[,i]))[k],na.rm=T))
+        z.2<-c(z.2,as.numeric(format(sum(data[which(X==unique(X)[j]),i]==unique(sort(data[,i]))[k],na.rm=T)/sum(X==unique(X)[j],na.rm=T),digits=2)))
+        #once z has all 5 # frequencies for row category j in column i of the data, rbind the 5 # frequencies for the current j with those from the previous j
+        if(k==length(unique(data[,i])))  {
+      z<-c(z,sum(z))
+      
+          y<-rbind(y,z)
+          y.2<-rbind(y.2,z.2)
+        }
+        
+      }
+      # once all 7 row categories have been done, show the table for column i
+      if(j==length(unique(X))) {
+        y<-as.data.frame(y)
+        colnames(y)<-c(unique(sort(data[,i])),"Total")
+        colsums.y<-colSums(y)
+        y[nrow(y)+1,]<-rep("-",ncol(y))
+        y[nrow(y)+1,]<-colsums.y      
+        
+        row.names(y)<-c(unique(X),"","Total")
+        print(paste("Frequency Table for",colnames(data)[i]))
+        
+        print(y)
+        
+        output.tables.freq[[i]]<<-y
+      
+        y.2<-as.data.frame(y.2)
+        y.2[nrow(y.2)+1,]<-rep("-",ncol(y.2))
+        y.2[nrow(y.2)+1,]<-format(colsums.y[1:(ncol(y)-1)]/colsums.y[ncol(y)],digits=2)
+      row.names(y.2)<-c(unique(X),"","Overall")
+        colnames(y.2)<-unique(sort(data[,i]))  
+      print(paste("Proportion Table for",colnames(data)[i]))
+      print(y.2)
+      
+       output.tables.prop[[i]]<<-y.2  
+      
+      }
+      
+  
+    }
+    
+   
+  }
+  
+  
+  
+}
+
+```
+
+Run the function with test data
+```{r}
+
+```{r}
+## Running the function with the data specified above
+
+freq.prop.tables.Function(test.data$category, data=test.data)
+
+
+```
+
+```
+

@@ -15,7 +15,7 @@ var.3<-abs(round(rnorm(200)))
 var.4<-abs(round(rnorm(200)))
 category<-rep(c("A","B","C","D"),50)
 
-test.data<-data.frame(category, var.1,var.2,var.3, var.4)
+test.data<-data.frame(category, var.1,var.2,var.3, var.4,stringsAsFactors = F)
 
 ```
 
@@ -34,22 +34,34 @@ freq.prop.tables.Function = function(X, data)
 {
   arguments <- as.list(match.call())
   y = eval(arguments$y, data)
+  
  output.tables.freq<<-vector(mode="list",length=ncol(data))
+ 
  names(output.tables.freq)<<-paste("freq",colnames(data),sep="_")
+ 
 output.tables.prop<<-vector(mode="list",length=ncol(data))
+
 names(output.tables.prop)<<-paste("prop",colnames(data),sep="_")
+
+# i is which column category of the data we are looking at 
   for (i in 2:ncol(data)) {
-    # indexes which row category of the data we are looking at 
+    
     y<-NULL
     y.2<-NULL
+    
+    # j is the different levels of the categorizing variable - 
     for (j in 1:length(unique(X))) {
       
       z<-NULL
       z.2<-NULL
-      # indexes which category of values we are looking at in row category j in column i of the data -- ex.Want the number of times var.1=0,1,2, or 3 when category= A, etc.
-      for (k in 1:length(unique(data[,i]))) {
-        # make a vector of the 5 # frequencies for the current j, resetting with each new j
+      
+         # k is the different values in each column variable (i) that we are trying to summmarize.
+         #-- ex. Want the number of times var.1 (i) = 0,1,2, or 3 (k) when category= A (j), etc.
+         for (k in 1:length(unique(data[,i]))) {
+       
+         # make a vector of the # frequencies for the current j, resetting with each new j
         z<-c(z,sum(data[which(X==unique(X)[j]),i]==unique(sort(data[,i]))[k],na.rm=T))
+        
         z.2<-c(z.2,as.numeric(format(sum(data[which(X==unique(X)[j]),i]==unique(sort(data[,i]))[k],na.rm=T)/sum(X==unique(X)[j],na.rm=T),digits=2)))
         #once z has all frequencies for row category j in column i of the data, rbind the frequencies for the current j with those from the previous j
         if(k==length(unique(data[,i])))  {
